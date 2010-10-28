@@ -1,7 +1,5 @@
 class SudukoSolver 
   
-  @board
-  
   def initialize
     @board = 9.times.map{ 9.times.map{ 0 } }
   end

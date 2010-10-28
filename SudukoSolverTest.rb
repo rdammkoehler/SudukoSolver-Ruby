@@ -2,10 +2,6 @@ require 'test/unit'
 require 'SudukoSolver'
 
 class SudukoSolverTest < Test::Unit::TestCase
-  
-  @solver
-  @test_game
-  @solution_of_test_game
 
   def setup
     @solver = SudukoSolver.new
