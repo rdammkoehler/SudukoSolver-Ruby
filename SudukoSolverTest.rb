@@ -132,4 +132,39 @@ class SudukoSolverTest < Test::Unit::TestCase
     actual = @solver.section_has_digit 4, 3
     assert_equal expected, actual
   end
+  
+  def test_section_locates_section_zero
+    expected = 0
+    actual = @solver.section 0, 0
+    assert_equal expected, actual
+  end
+  
+  def test_section_locates_section_one
+    expected = 1
+    actual = @solver.section 0, 3
+    assert_equal expected, actual
+  end
+  
+  def test_section_locates_section_three
+    expected = 3
+    actual = @solver.section 3, 2
+    assert_equal expected, actual
+  end
+  
+  def test_section_locates_section_eight
+    expected = 8
+    actual = @solver.section 7, 7
+    assert_equal expected, actual
+  end
+  
+  def test_solves_test_game
+    expected = @solution_of_test_game
+    setup_test_game
+    actual = @solver.solve
+    @solver.pretty_print
+    (0..8).each{ |rowIdx| assert_equal (1..9).to_a, actual[rowIdx].sort, "row: #{rowIdx}" }
+    (0..8).each{ |colIdx| assert_equal (1..9).to_a, actual.transpose[colIdx].sort, "col: #{colIdx}" }
+    assert_equal expected, actual
+  end
+  
 end
