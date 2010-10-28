@@ -58,7 +58,7 @@ class SudukoSolver
   
   def solve
     attempts = 0
-    while !solved && attempts < 81
+    while !solved? && attempts < 81
       (0..8).each{ |rowIdx| 
         (0..8).each{ |colIdx| 
           if 0 == @board[rowIdx][colIdx]
@@ -81,7 +81,7 @@ class SudukoSolver
     @board
   end
   
-  def solved
+  def solved?
     solved = true
     (0..8).each{ |rowIdx| solved &= (1..9).to_a == @board[rowIdx].sort }
     (0..8).each{ |colIdx| solved &= (1..9).to_a == @board.transpose[colIdx].sort }
