@@ -1,3 +1,4 @@
+
 class SudukoSolver 
   
   def initialize
@@ -57,28 +58,86 @@ class SudukoSolver
   end
   
   def solve
+    stack = Array.new
+    r = c = 0
+    d = 1
+    previous = [ -1, -1, -1]
+    backtrack = true
     attempts = 0
-    while !solved? && attempts < 81
-      (0..8).each{ |rowIdx| 
-        (0..8).each{ |colIdx| 
-          if 0 == @board[rowIdx][colIdx]
-            ct = 0
-            (1..9).each{ |digit| 
-              if ( !row_has_digit(rowIdx,digit) &&
-                   !col_has_digit(colIdx,digit) &&
-                   !section_has_digit(section(rowIdx,colIdx),digit)
-                )
-                @board[rowIdx][colIdx] = digit;
-                ct += 1
-              end
-            }
+    until !backtrack
+      backtrack = false
+      seek = true
+      rowIdx = r
+      while rowIdx < 8 && seek
+        colIdx = c
+        while colIdx < 8 && seek
+          digit = d
+          while digit < 9 && seek
+            stack.push attempt(rowIdx,colIdx,digit)
+            digit += 1
           end
-        }
-      }
+          if 0 == @board[rowIdx][colIdx]
+            puts "backtrack!"
+            pretty_print
+            r, c, d = backtrack(stack)
+            seek = false
+            backtrack = true
+          elsif previous == stack.last
+            puts "#{previous.inspect} == #{stack.last.inspect}"
+            r, c, d = backtrack(stack)
+            seek = false
+            backtrack = true
+          else
+            if !stack.last.nil?
+              previous = stack.last 
+              puts "previous <= #{previous.inspect}"
+            end
+            r = c = 0
+            d = 1
+          end
+          colIdx += 1
+        end
+        rowIdx += 1
+      end
       attempts += 1
     end
-    puts "attempts: #{attempts}"
+    puts "moves: #{stack.compact.inspect}"
     @board
+  end
+
+  def attempt(rowIdx,colIdx,digit)
+    puts "trying #{rowIdx}, #{colIdx} with #{digit}"
+    if 0 == @board[rowIdx][colIdx] && 
+       !row_has_digit(rowIdx,digit) &&
+       !col_has_digit(colIdx,digit) &&
+       !section_has_digit(section(rowIdx,colIdx),digit)
+      puts "#{rowIdx}, #{colIdx} <== #{digit}"
+      @board[rowIdx][colIdx] = digit;
+      pretty_print
+      [ rowIdx, colIdx, digit ]
+    end
+  end
+  
+  def backtrack(stack)
+    last = [0,0,1]
+    puts "stack: #{stack.inspect}"
+    if !stack.empty?
+      last = nil
+      until !last.nil? || stack.empty?
+        last = stack.pop
+      end
+      puts "popped #{last.inspect}"
+      if !last.nil?
+        last[2] += 1 
+        @board[ last[0] ][ last[1] ] = 0 
+        pretty_print
+      else
+        puts "terminal!"
+        last = [0,0,1]
+        throw "killed by death"
+      end
+    end
+    last
   end
   
   def solved?
@@ -90,10 +149,12 @@ class SudukoSolver
   
   #untested
   def pretty_print
+    puts "/----------------\\"
     @board.each{|row| 
-      row.each{ |col| print col }
+      row.each{ |col| print "#{col} " }
       puts
     }
+    puts "\\----------------/"
   end
   
 end

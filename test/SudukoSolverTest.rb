@@ -1,9 +1,9 @@
 require 'test/unit'
-require 'SudukoSolver'
+require '../SudukoSolver'
 
 class SudukoSolverTest < Test::Unit::TestCase
 
-  def setup
+  def setup 
     @solver = SudukoSolver.new
     @test_game = [
     [0, 0, 7, 0, 0, 4, 0, 5, 9],
@@ -33,7 +33,7 @@ class SudukoSolverTest < Test::Unit::TestCase
   end
   
   def test_get_row_returns_row
-    expected = 9.times.map { 0 }
+    expected = 9.times.map { 0 } 
     actual = @solver.get_row 0
     assert_equal expected, actual
   end
@@ -157,6 +157,8 @@ class SudukoSolverTest < Test::Unit::TestCase
     expected = @solution_of_test_game
     setup_test_game
     actual = @solver.solve
+    puts
+    puts "Solution:"
     @solver.pretty_print
     (0..8).each{ |rowIdx| assert_equal (1..9).to_a, actual[rowIdx].sort, "row: #{rowIdx}" }
     (0..8).each{ |colIdx| assert_equal (1..9).to_a, actual.transpose[colIdx].sort, "col: #{colIdx}" }
