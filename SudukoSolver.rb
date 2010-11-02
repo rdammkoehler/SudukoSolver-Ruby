@@ -58,7 +58,7 @@ class SudukoSolver
   end
   
   def solve
-    stack = Array.new
+    @stack = Array.new
     r = c = 0
     d = 1
     previous = [ -1, -1, -1]
@@ -68,29 +68,25 @@ class SudukoSolver
       backtrack = false
       seek = true
       rowIdx = r
-      while rowIdx < 8 && seek
+      while rowIdx < 9 && seek
         colIdx = c
-        while colIdx < 8 && seek
+        while colIdx < 9 && seek
           digit = d
-          while digit < 9 && seek
-            stack.push attempt(rowIdx,colIdx,digit)
-            digit += 1
+          while digit < 10 && seek
+            @stack.push attempt(rowIdx,colIdx,digit)
+            if !@stack.last.nil?
+              digit = 10
+            else
+              digit += 1
+            end
           end
           if 0 == @board[rowIdx][colIdx]
-            puts "backtrack!"
-            pretty_print
-            r, c, d = backtrack(stack)
+            r, c, d = backtrack()
             seek = false
             backtrack = true
-          elsif previous == stack.last
-            puts "#{previous.inspect} == #{stack.last.inspect}"
-            r, c, d = backtrack(stack)
-            seek = false
-            backtrack = true
-          else
-            if !stack.last.nil?
-              previous = stack.last 
-              puts "previous <= #{previous.inspect}"
+          else 
+            if !@stack.last.nil?
+              previous = @stack.last 
             end
             r = c = 0
             d = 1
@@ -101,40 +97,32 @@ class SudukoSolver
       end
       attempts += 1
     end
-    puts "moves: #{stack.compact.inspect}"
     @board
   end
 
   def attempt(rowIdx,colIdx,digit)
-    puts "trying #{rowIdx}, #{colIdx} with #{digit}"
     if 0 == @board[rowIdx][colIdx] && 
        !row_has_digit(rowIdx,digit) &&
        !col_has_digit(colIdx,digit) &&
        !section_has_digit(section(rowIdx,colIdx),digit)
-      puts "#{rowIdx}, #{colIdx} <== #{digit}"
       @board[rowIdx][colIdx] = digit;
-      pretty_print
       [ rowIdx, colIdx, digit ]
     end
   end
   
-  def backtrack(stack)
+  def backtrack()
     last = [0,0,1]
-    puts "stack: #{stack.inspect}"
-    if !stack.empty?
+    if !@stack.empty?
       last = nil
-      until !last.nil? || stack.empty?
-        last = stack.pop
+      until !last.nil? || @stack.empty?
+        last = @stack.pop
       end
-      puts "popped #{last.inspect}"
       if !last.nil?
         last[2] += 1 
         @board[ last[0] ][ last[1] ] = 0 
-        pretty_print
       else
-        puts "terminal!"
         last = [0,0,1]
-        throw "killed by death"
+        raise "killed by death"
       end
     end
     last
