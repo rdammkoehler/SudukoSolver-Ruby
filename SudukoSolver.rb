@@ -57,6 +57,7 @@ class SudukoSolver
     (3 * sectionRow) + sectionCol
   end
   
+  #still don't like this method. too much logic, not obvious whats going on
   def solve
     @stack = Array.new
     startRow, startCol, startDigit = reset_start_indicies()
@@ -132,13 +133,6 @@ class SudukoSolver
       end
     end
     last
-  end
-  
-  def solved?
-    solved = true
-    (0..8).each{ |rowIdx| solved &= (1..9).to_a == @board[rowIdx].sort }
-    (0..8).each{ |colIdx| solved &= (1..9).to_a == @board.transpose[colIdx].sort }
-    solved
   end
   
   #untested
