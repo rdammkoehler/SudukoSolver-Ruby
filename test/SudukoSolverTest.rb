@@ -157,9 +157,9 @@ class SudukoSolverTest < Test::Unit::TestCase
     expected = @solution_of_test_game
     setup_test_game
     actual = @solver.solve
-    puts
-    puts "Solution:"
-    @solver.pretty_print
+    # puts
+    # puts "Solution:"
+    # @solver.pretty_print
     (0..8).each{ |rowIdx| assert_equal (1..9).to_a, actual[rowIdx].sort, "row: #{rowIdx}" }
     (0..8).each{ |colIdx| assert_equal (1..9).to_a, actual.transpose[colIdx].sort, "col: #{colIdx}" }
     assert_equal expected, actual

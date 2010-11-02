@@ -59,8 +59,7 @@ class SudukoSolver
   
   def solve
     @stack = Array.new
-    r = c = 0
-    d = 1
+    r, c, startDigit = reset_start_indicies()
     previous = [ -1, -1, -1]
     backtrack = true
     attempts = 0
@@ -71,25 +70,16 @@ class SudukoSolver
       while rowIdx < 9 && seek
         colIdx = c
         while colIdx < 9 && seek
-          digit = d
-          while digit < 10 && seek
-            @stack.push attempt(rowIdx,colIdx,digit)
-            if !@stack.last.nil?
-              digit = 10
-            else
-              digit += 1
-            end
-          end
-          if 0 == @board[rowIdx][colIdx]
-            r, c, d = backtrack()
-            seek = false
-            backtrack = true
-          else 
+          seek(rowIdx,colIdx,startDigit)
+          if an_assignment_was_made(rowIdx,colIdx)
             if !@stack.last.nil?
               previous = @stack.last 
             end
-            r = c = 0
-            d = 1
+            r, c, startDigit = reset_start_indicies()
+          else
+            r, c, startDigit = backtrack()
+            seek = false
+            backtrack = true 
           end
           colIdx += 1
         end
@@ -98,6 +88,25 @@ class SudukoSolver
       attempts += 1
     end
     @board
+  end
+
+  def seek(rowIdx,colIdx,startDigit)
+    while startDigit < 10
+      @stack.push attempt(rowIdx,colIdx,startDigit)
+      if !@stack.last.nil?
+        startDigit = 10
+      else
+        startDigit += 1
+      end
+    end
+  end
+
+  def an_assignment_was_made(rowIdx,colIdx)
+    0 != @board[rowIdx][colIdx]
+  end
+  
+  def reset_start_indicies()
+    [0, 0, 1]
   end
 
   def attempt(rowIdx,colIdx,digit)
