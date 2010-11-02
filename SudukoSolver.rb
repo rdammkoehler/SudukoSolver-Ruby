@@ -52,9 +52,9 @@ class SudukoSolver
   end
   
   def section(row,col)
-    r = row / 3 
-    c = (col / 3)
-    s = (3 * r) + c
+    sectionRow = row / 3 
+    sectionCol = (col / 3)
+    (3 * sectionRow) + sectionCol
   end
   
   def solve
@@ -100,13 +100,20 @@ class SudukoSolver
   end
 
   def attempt(rowIdx,colIdx,digit)
-    if 0 == @board[rowIdx][colIdx] && 
-       !row_has_digit(rowIdx,digit) &&
-       !col_has_digit(colIdx,digit) &&
-       !section_has_digit(section(rowIdx,colIdx),digit)
+    if unassigned?(rowIdx,colIdx) && can_place?(rowIdx,colIdx,digit)
       @board[rowIdx][colIdx] = digit;
       [ rowIdx, colIdx, digit ]
     end
+  end
+  
+  def unassigned?(rowIdx,colIdx) 
+    0 == @board[rowIdx][colIdx]
+  end
+  
+  def can_place?(rowIdx,colIdx,digit)
+    !row_has_digit(rowIdx,digit) &&
+    !col_has_digit(colIdx,digit) &&
+    !section_has_digit(section(rowIdx,colIdx),digit)
   end
   
   def backtrack()
