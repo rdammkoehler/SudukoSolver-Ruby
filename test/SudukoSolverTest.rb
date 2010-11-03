@@ -29,6 +29,17 @@ class SudukoSolverTest < Test::Unit::TestCase
     [4, 5, 3, 1, 6, 8, 2, 9, 7],
     ]
 
+    @challenge_game = [
+      [2, 0, 0, 0, 0, 4, 0, 0, 1],
+      [0, 9, 0, 0, 5, 0, 0, 0, 0],
+      [0, 8, 0, 7, 2, 9, 5, 0, 0],
+      [0, 6, 0, 0, 0, 0, 4, 9, 0],
+      [0, 0, 0, 0, 0, 0, 2, 0, 0],
+      [0, 3, 7, 0, 0, 0, 0, 5, 0],
+      [0, 0, 9, 6, 7, 0, 0, 1, 0],
+      [0, 0, 0, 0, 4, 0, 0, 8, 0],
+      [1, 0, 0, 9, 0, 0, 0, 0, 4],
+    ]
     
   end
   
@@ -81,10 +92,6 @@ class SudukoSolverTest < Test::Unit::TestCase
     (6..8).each{ |rowIdx| (6..8).each{ |colIdx| @solver.set rowIdx,colIdx, expected[rowIdx-6][colIdx-6] }}
     actual = @solver.get_section 8
     assert_equal expected, actual
-  end
-  
-  def setup_test_game
-    (0..8).each{ |rowIdx| (0..8).each{ |colIdx| @solver.set rowIdx,colIdx, @test_game[rowIdx][colIdx] }}
   end
   
   def test_check_for_digit_on_row_found
@@ -157,12 +164,42 @@ class SudukoSolverTest < Test::Unit::TestCase
     expected = @solution_of_test_game
     setup_test_game
     actual = @solver.solve
-    # puts
-    # puts "Solution:"
-    # @solver.pretty_print
-    (0..8).each{ |rowIdx| assert_equal (1..9).to_a, actual[rowIdx].sort, "row: #{rowIdx}" }
-    (0..8).each{ |colIdx| assert_equal (1..9).to_a, actual.transpose[colIdx].sort, "col: #{colIdx}" }
+    assert solved?
     assert_equal expected, actual
+  end
+  
+  def test_solves_challenge_game
+    setup_challenge_game
+    actual = @solver.solve
+    assert solved?
+  end
+  
+  def solved?
+    (0..8).each{ |rowIdx| assert_equal (1..9).to_a, @solver.board[rowIdx].sort, "row: #{rowIdx}" }
+    (0..8).each{ |colIdx| assert_equal (1..9).to_a, @solver.board.transpose[colIdx].sort, "col: #{colIdx}" }
+    (0..8).each{ |secId|  assert_equal (1..9).to_a, @solver.get_section(secId).flatten.sort, "sec: #{secId}" }
+  end
+  
+  def setup_test_game
+    setup_game @test_game
+  end
+  
+  def setup_challenge_game
+    setup_game @challenge_game
+  end
+  
+  def setup_game(gameData)
+    (0..8).each{ |rowIdx| (0..8).each{ |colIdx| @solver.set rowIdx,colIdx, gameData[rowIdx][colIdx] }}
+  end
+  
+  #untested
+  def pretty_print
+    puts "/----------------\\"
+    @solver.board.each{|row| 
+      row.each{ |col| print "#{col} " }
+      puts
+    }
+    puts "\\----------------/"
   end
   
 end

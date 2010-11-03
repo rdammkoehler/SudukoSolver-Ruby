@@ -1,6 +1,8 @@
 
 class SudukoSolver 
   
+  attr_accessor :board
+  
   def initialize
     @board = 9.times.map{ 9.times.map{ 0 } }
   end
@@ -133,16 +135,6 @@ class SudukoSolver
       end
     end
     last
-  end
-  
-  #untested
-  def pretty_print
-    puts "/----------------\\"
-    @board.each{|row| 
-      row.each{ |col| print "#{col} " }
-      puts
-    }
-    puts "\\----------------/"
   end
   
 end
