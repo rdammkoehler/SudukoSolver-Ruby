@@ -5,6 +5,7 @@ class SudukoSolver
   
   def initialize
     @board = 9.times.map{ 9.times.map{ 0 } }
+    @moves = 0
   end
   
   def get_row(row) 
@@ -61,6 +62,7 @@ class SudukoSolver
   
   #still don't like this method. too much logic, not obvious whats going on
   def solve
+    backtrack_count=0
     @stack = Array.new
     startRow, startCol, startDigit = reset_start_indicies()
     backtrack = true
@@ -72,18 +74,21 @@ class SudukoSolver
         colIdx = startCol
         while colIdx < 9 && seek
           seek(rowIdx,colIdx,startDigit)
+          @moves += 1
           if an_assignment_was_made(rowIdx,colIdx)
             startRow, startCol, startDigit = reset_start_indicies()
           else
             startRow, startCol, startDigit = backtrack()
             seek = false
             backtrack = true 
+            backtrack_count += 1
           end
           colIdx += 1
         end
         rowIdx += 1
       end
     end
+    puts "solved in #{@moves} total moves with #{@stack.compact.size} correct moves using #{backtrack_count} backtracks"
     @board
   end
 

@@ -41,6 +41,18 @@ class SudukoSolverTest < Test::Unit::TestCase
       [1, 0, 0, 9, 0, 0, 0, 0, 4],
     ]
     
+    @diabolical_20101105 = [
+      [8,7,0,4,0,0,0,0,0],
+      [0,0,0,0,6,2,1,0,5],
+      [0,0,0,0,0,0,0,4,7],
+      [2,0,8,0,0,6,0,9,0],
+      [0,0,0,0,9,0,0,0,0],
+      [0,4,0,2,0,0,8,0,1],
+      [1,3,0,0,0,0,0,0,0],
+      [7,0,2,3,8,0,0,0,0],
+      [0,0,0,0,0,7,0,1,2],
+    ]
+    
   end
   
   def test_get_row_returns_row
@@ -161,6 +173,7 @@ class SudukoSolverTest < Test::Unit::TestCase
   end
   
   def test_solves_test_game
+    puts "\nTest Game:"
     expected = @solution_of_test_game
     setup_test_game
     actual = @solver.solve
@@ -169,7 +182,15 @@ class SudukoSolverTest < Test::Unit::TestCase
   end
   
   def test_solves_challenge_game
+    puts "\nChallenge Game:"
     setup_challenge_game
+    actual = @solver.solve
+    assert solved?
+  end
+  
+  def test_solve_diabolical_20101105
+    puts "\ndiabolical_20101105:"
+    setup_diabolical_20101105_game
     actual = @solver.solve
     assert solved?
   end
@@ -186,6 +207,10 @@ class SudukoSolverTest < Test::Unit::TestCase
   
   def setup_challenge_game
     setup_game @challenge_game
+  end
+  
+  def setup_diabolical_20101105_game
+    setup_game @diabolical_20101105
   end
   
   def setup_game(gameData)
