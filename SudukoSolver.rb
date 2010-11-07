@@ -5,7 +5,9 @@ class SudukoSolver
   
   def initialize
     @board = 9.times.map{ 9.times.map{ 0 } }
-    @moves = 0
+    @seek = true
+    @backtrack = true
+    @stack = Array.new
   end
   
   def get_row(row) 
@@ -60,36 +62,35 @@ class SudukoSolver
     (3 * sectionRow) + sectionCol
   end
   
-  #still don't like this method. too much logic, not obvious whats going on
   def solve
-    backtrack_count=0
-    @stack = Array.new
     startRow, startCol, startDigit = reset_start_indicies()
-    backtrack = true
-    until !backtrack
-      backtrack = false
-      seek = true
+    until !@backtrack
+      @backtrack = false
+      @seek = true
       rowIdx = startRow
-      while rowIdx < 9 && seek
+      while rowIdx < 9 && @seek
         colIdx = startCol
-        while colIdx < 9 && seek
-          seek(rowIdx,colIdx,startDigit)
-          @moves += 1
-          if an_assignment_was_made? rowIdx, colIdx
-            startRow, startCol, startDigit = reset_start_indicies()
-          else
-            startRow, startCol, startDigit = backtrack()
-            seek = false
-            backtrack = true 
-            backtrack_count += 1
-          end
+        while colIdx < 9 && @seek
+          startRow, startCol, startDigit = move rowIdx, colIdx, startDigit
           colIdx += 1
         end
         rowIdx += 1
       end
     end
-    puts "solved in #{@moves} total moves with #{@stack.compact.size} correct moves using #{backtrack_count} backtracks"
     @board
+  end
+  
+  def move(rowIdx,colIdx,startDigit)
+    seek rowIdx, colIdx, startDigit
+    index rowIdx, colIdx
+  end
+  
+  def index(rowIdx,colIdx)
+    if an_assignment_was_made? rowIdx, colIdx
+      startRow, startCol, startDigit = reset_start_indicies()
+    else
+      startRow, startCol, startDigit = backtrack()
+    end
   end
 
   def seek(rowIdx,colIdx,startDigit)
@@ -125,6 +126,8 @@ class SudukoSolver
   end
   
   def backtrack()
+    @seek = false
+    @backtrack = true
     previous_steps_exist? ? create_next_move() : reset_start_indicies()
   end
   
