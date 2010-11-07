@@ -75,7 +75,7 @@ class SudukoSolver
         while colIdx < 9 && seek
           seek(rowIdx,colIdx,startDigit)
           @moves += 1
-          if an_assignment_was_made(rowIdx,colIdx)
+          if an_assignment_was_made? rowIdx, colIdx
             startRow, startCol, startDigit = reset_start_indicies()
           else
             startRow, startCol, startDigit = backtrack()
@@ -99,7 +99,7 @@ class SudukoSolver
     end
   end
 
-  def an_assignment_was_made(rowIdx,colIdx)
+  def an_assignment_was_made?(rowIdx,colIdx)
     0 != @board[rowIdx][colIdx]
   end
   
@@ -126,20 +126,28 @@ class SudukoSolver
   
   def backtrack()
     last = [0,0,1]
-    if !@stack.empty?
+    if previous_steps_exist?
       last = nil
       until !last.nil? || @stack.empty?
         last = @stack.pop
       end
       if !last.nil?
         last[2] += 1 
-        @board[ last[0] ][ last[1] ] = 0 
+        reset_cell last[0], last[1] 
       else
         last = [0,0,1]
         raise "killed by death"
       end
     end
     last
+  end
+  
+  def previous_steps_exist?
+    !@stack.empty?
+  end
+  
+  def reset_cell(rowIdx,colIdx)
+    @board[ rowIdx ][ colIdx ] = 0 
   end
   
 end
