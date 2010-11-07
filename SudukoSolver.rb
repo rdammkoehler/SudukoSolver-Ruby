@@ -125,21 +125,24 @@ class SudukoSolver
   end
   
   def backtrack()
-    last = [0,0,1]
-    if previous_steps_exist?
-      last = nil
-      until !last.nil? || @stack.empty?
-        last = @stack.pop
-      end
-      if !last.nil?
-        last[2] += 1 
-        reset_cell last[0], last[1] 
-      else
-        last = [0,0,1]
-        raise "killed by death"
-      end
+    previous_steps_exist? ? create_next_move() : reset_start_indicies()
+  end
+  
+  def create_next_move()
+    last_move = find_last_move()
+    raise "killed by death" if last_move.nil?
+      
+    reset_cell last_move[0], last_move[1] 
+    last_move[2] += 1 
+    last_move
+  end
+  
+  def find_last_move
+    last_move = nil
+    until !last_move.nil? || @stack.empty?
+      last_move = @stack.pop
     end
-    last
+    last_move
   end
   
   def previous_steps_exist?
