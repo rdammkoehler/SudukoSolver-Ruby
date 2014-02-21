@@ -63,6 +63,9 @@ class SudukoSolver
   end
   
   def solve
+    start = Time.now.usec
+    backtrack_count=0
+    @stack = Array.new
     startRow, startCol, startDigit = reset_start_indicies()
     until !@backtrack
       @backtrack = false
@@ -77,6 +80,9 @@ class SudukoSolver
         rowIdx += 1
       end
     end
+    finish = Time.now.usec
+    elapsed = finish - start
+    puts "solved in #{@moves} total moves with #{@stack.compact.size} correct moves using #{backtrack_count} backtracks in #{elapsed} micro-seconds"
     @board
   end
   
